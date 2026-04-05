@@ -6,7 +6,7 @@ import pandas as pd
 from PIL import Image
 
 def set_seed(seed=42):
-    """Set seeds for reproducibility."""
+    # Set seeds for reproducibility.
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -14,10 +14,7 @@ def set_seed(seed=42):
         torch.cuda.manual_seed_all(seed)
 
 class DeepFashionDataset(torch.utils.data.Dataset):
-    """
-    Dataset wrapper for DeepFashion.
-    Assumes a CSV or DataFrame is provided with ['image_path', 'item_id'].
-    """
+    # Dataset wrapper for DeepFashion.
     def __init__(self, data_df, transform=None):
         self.data_df = data_df
         self.transform = transform
@@ -39,29 +36,65 @@ class DeepFashionDataset(torch.utils.data.Dataset):
         if self.transform is not None:
             image = self.transform(image)
             
-        return image, item_id, image_path
+        meta = {}
+        if 'bbox' in row and pd.notna(row['bbox']).all() if isinstance(row.get('bbox'), tuple) else pd.notna(row.get('bbox')):
+            meta['bbox'] = row['bbox']
+        if 'gt_description' in row and pd.notna(row['gt_description']):
+            meta['gt_description'] = row['gt_description']
+            
+        return image, item_id, image_path, meta
 
 def load_deepfashion_metadata(data_dir):
-    """
-    Scans the data directory for images to mock/build a dataframe mapping
-    image paths to item_ids. In DeepFashion, item_ids are usually folders (e.g. id_0000001).
-    """
+    # Scans the data directory for images to mock/build a dataframe mapping
+    # image paths to item_ids. In DeepFashion, item_ids are usually folders (e.g. id_0000001).
     records = []
     
-    # Check if a labels file exists
     labels_path = os.path.join(data_dir, 'list_eval_partition.txt')
+    bbox_path = os.path.join(data_dir, 'list_bbox_inshop.txt')
+    desc_path = os.path.join(data_dir, 'list_description_inshop.json')
+
     if os.path.exists(labels_path):
         # Format usually: image_name item_id evaluation_status
         df = pd.read_csv(labels_path, sep=r'\s+', skiprows=1)
-        # Fix columns based on actual DeepFashion format if needed. Here we assume generic format:
+        
+        # Merge bounding boxes if available
+        if os.path.exists(bbox_path):
+            df_bbox = pd.read_csv(bbox_path, sep=r'\s+', skiprows=1)
+            # image_name  clothes_type  pose_type  x_1  y_1  x_2  y_2
+            df = pd.merge(df, df_bbox, on='image_name', how='left')
+            
+        # Merge descriptions if available
+        if os.path.exists(desc_path):
+            import json
+            with open(desc_path, 'r') as f:
+                desc_json = json.load(f)
+            # JSON is list of dicts: {"item": id, "color": str, "description": [...] }
+            # Convert list of descriptions to single string
+            desc_records = []
+            for d in desc_json:
+                text_desc = " ".join(d.get("description", []))
+                desc_records.append({
+                    "item_id": d.get("item"),
+                    "gt_color": d.get("color"),
+                    "gt_description": text_desc
+                })
+            df_desc = pd.DataFrame(desc_records)
+            df = pd.merge(df, df_desc, on='item_id', how='left')
+
+        # Format records for Dataset API
         if 'image_name' in df.columns and 'item_id' in df.columns:
             for _, row in df.iterrows():
                 path = os.path.join(data_dir, row['image_name'])
-                records.append({
+                record = {
                     'image_path': path,
                     'item_id': row['item_id'],
                     'split': row.get('evaluation_status', 'train')
-                })
+                }
+                if 'x_1' in row:
+                    record['bbox'] = (row['x_1'], row['y_1'], row['x_2'], row['y_2'])
+                if 'gt_description' in row:
+                    record['gt_description'] = row['gt_description']
+                records.append(record)
             return pd.DataFrame(records)
             
     # Fallback: scan folders

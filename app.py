@@ -20,7 +20,7 @@ def load_pipeline(index_path, alpha, clip_model):
     return RetrievalPipeline(index_path=index_path, alpha=alpha, clip_model_path=clip_model)
 
 def main():
-    st.title("👗 Visual Product Search Engine")
+    st.title("Visual Product Search Engine")
     st.markdown("Upload a fashion image to find visually similar items from our catalog!")
 
     st.sidebar.header("Settings")

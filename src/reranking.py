@@ -21,11 +21,9 @@ class BLIP2Reranker:
         self.model.eval()
 
     def get_itm_score(self, image: Image.Image, text: str) -> float:
-        """
-        Calculates a pseudo-ITM score using the language modeling loss 
-        of the text given the image. Lower loss means higher likelihood/match.
-        Returns negative loss so that higher score = better match.
-        """
+        # Calculates a pseudo-ITM score using the language modeling loss 
+        # of the text given the image. Lower loss means higher likelihood/match.
+        # Returns negative loss so that higher score = better match.
         inputs = self.processor(image, text=text, return_tensors="pt").to(self.device, self.model.dtype)
         # For conditional generation, input text is passed as labels to compute loss
         labels = inputs.input_ids.clone()
@@ -46,10 +44,8 @@ class BLIP2Reranker:
         return -loss
 
     def rerank(self, query_image: Image.Image, candidates: List[Dict]) -> List[Dict]:
-        """
-        Given a query image and a list of candidate dictionaries containing 'caption',
-        computes the ITM score and sorts candidates descending by score.
-        """
+        # Given a query image and a list of candidate dictionaries containing 'caption',
+        # computes the ITM score and sorts candidates descending by score.
         scored_candidates = []
         for cand in candidates:
             score = self.get_itm_score(query_image, cand['caption'])

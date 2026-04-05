@@ -34,13 +34,8 @@ class RetrievalPipeline:
         self.index.load_index(idx_file, max_elements=len(self.metadata))
 
     def retrieve(self, query_image: Image.Image) -> List[Dict]:
-        """
-        Online pipeline:
-        1. Crop query
-        2. Visual Encode with CLIP
-        3. HNSW Search
-        4. Re-rank with BLIP-2 ITM
-        """
+        # Online pipeline: Crop query -> Visual Encode with CLIP -> HNSW Search -> Re-rank with BLIP-2 ITM
+        
         # Step 1: Crop
         cropped = self.detector.crop_primary_item(query_image)
         

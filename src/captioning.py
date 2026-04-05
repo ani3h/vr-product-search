@@ -20,10 +20,11 @@ class BLIP2Captioner:
         ).to(self.device)
         self.model.eval() # Keep frozen
 
-    def generate_caption(self, image: Image.Image, prompt="A photo of a clothing item showing color, fit, material, and style. It is ") -> str:
-        """
-        Generate a caption for the given PIL image.
-        """
+    def generate_caption(self, image: Image.Image, prompt="A photo of a clothing item showing color, fit, material, and style. It is ", gt_caption=None) -> str:
+        # Generate a caption for the given PIL image.
+        if gt_caption is not None:
+            return gt_caption
+            
         # BLIP-2 can be prompted.
         inputs = self.processor(image, text=prompt, return_tensors="pt").to(self.device, self.model.dtype)
         

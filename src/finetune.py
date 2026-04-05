@@ -20,7 +20,7 @@ def parse_args():
     return parser.parse_args()
 
 class SupConLoss(torch.nn.Module):
-    """Supervised Contrastive Learning loss."""
+    # Supervised Contrastive Learning loss.
     def __init__(self, temperature=0.07):
         super(SupConLoss, self).__init__()
         self.temperature = temperature
@@ -97,7 +97,7 @@ def train():
     for epoch in range(args.epochs):
         epoch_loss = 0
         pbar = tqdm(dataloader, desc=f"Epoch {epoch+1}/{args.epochs}")
-        for images, item_ids, _ in pbar:
+        for images, item_ids, _, _ in pbar:
             images = images.to(device)
             # Map item_ids to torch labels
             labels = torch.tensor([id_to_int[i] for i in item_ids]).to(device)

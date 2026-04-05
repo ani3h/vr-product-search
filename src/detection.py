@@ -5,17 +5,22 @@ import numpy as np
 
 class YOLODetector:
     def __init__(self, model_version='yolov8n.pt'):
-        """
-        Initializes the YOLO model for clothing/person detection.
-        """
         self.model = YOLO(model_version)
 
-    def crop_primary_item(self, image: Image.Image) -> Image.Image:
-        """
-        Detects objects in the image and crops the bounding box of the most 
-        probable primary item (often a person or clothing item).
-        If no detection is confident enough, returns the original image.
-        """
+    def crop_primary_item(self, image: Image.Image, gt_bbox=None) -> Image.Image:
+        # Detects objects in the image and crops the bounding box of the most 
+        # probable primary item (often a person or clothing item).
+        # If gt_bbox is provided, uses it directly.
+        # If no detection is confident enough, returns the original image.
+        if gt_bbox is not None:
+            # Assuming gt_bbox is (x_1, y_1, x_2, y_2)
+            try:
+                # Bboxes can be provided as strings from pandas, ensure int
+                x1, y1, x2, y2 = [int(v) for v in gt_bbox]
+                return image.crop((x1, y1, x2, y2))
+            except Exception as e:
+                pass # fallback to YOLO if gt_bbox parsing fails
+                
         results = self.model(image, verbose=False)
         
         if not results or len(results[0].boxes) == 0:

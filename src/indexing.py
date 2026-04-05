@@ -53,13 +53,13 @@ def build_index():
     print("Starting offline indexing...")
     for idx in tqdm(range(len(dataset))):
         try:
-            image, item_id, path = dataset[idx]
+            image, item_id, path, meta = dataset[idx]
             
             # 1. Detection
-            cropped = detector.crop_primary_item(image)
+            cropped = detector.crop_primary_item(image, gt_bbox=meta.get('bbox'))
             
             # 2. Captioning
-            caption = captioner.generate_caption(cropped)
+            caption = captioner.generate_caption(cropped, gt_caption=meta.get('gt_description'))
             
             # 3. Embedding fusion
             emb_tensor = embedder.compute_fusion_embedding(cropped, caption, args.alpha)

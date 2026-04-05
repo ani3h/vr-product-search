@@ -1,11 +1,11 @@
 import numpy as np
 
 def score_recall_at_k(gt_id, retrieved_ids, k):
-    """Recall@K is 1 if any retrieved item in top K matches gt_id, 0 otherwise."""
+    # Recall@K is 1 if any retrieved item in top K matches gt_id, 0 otherwise.
     return 1.0 if gt_id in retrieved_ids[:k] else 0.0
 
 def score_ndcg_at_k(gt_id, retrieved_ids, k):
-    """Normalized Discounted Cumulative Gain at K."""
+    # Normalized Discounted Cumulative Gain at K.
     dcg = 0.0
     for i, pred in enumerate(retrieved_ids[:k]):
         rel = 1.0 if pred == gt_id else 0.0
@@ -17,7 +17,7 @@ def score_ndcg_at_k(gt_id, retrieved_ids, k):
     return dcg / idcg
 
 def score_map_at_k(gt_id, retrieved_ids, k):
-    """Mean Average Precision at K."""
+    # Mean Average Precision at K.
     ap = 0.0
     hits = 0.0
     for i, pred in enumerate(retrieved_ids[:k]):
