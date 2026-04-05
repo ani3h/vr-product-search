@@ -1,2 +1,30 @@
+# Data and OS
 data/
-.DS_STORE
+.DS_Store
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Python compiled
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Models and Vector DB Indices
+models/clip_finetuned/
+index/hnsw_index/
+*.pt
+*.pth
+*.bin
+*.pkl
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Streamlit
+.streamlit/

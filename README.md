@@ -18,6 +18,32 @@ graph TD
     I --> J[Final Retrieval]
 ```
 
+## Project Directory Structure
+
+```text
+├── data/
+│   ├── raw/                  # DeepFashion dataset (images, item IDs)
+│   └── processed/            # Cropped images, generated captions
+├── models/
+│   └── clip_finetuned/       # Saved fine-tuned CLIP checkpoints
+├── index/
+│   └── hnsw_index/           # Stored HNSW / Pinecone / Milvus vector index
+├── src/
+│   ├── detection.py          # YOLO-based product localization & cropping
+│   ├── captioning.py         # BLIP-2 caption generation
+│   ├── embedding.py          # CLIP visual + text encoding, fusion (alpha weighting)
+│   ├── indexing.py           # Build & save HNSW ANN index
+│   ├── retrieval.py          # Online query pipeline (crop → encode → ANN search → re-rank)
+│   ├── reranking.py          # BLIP-2 ITM re-ranking of top-K candidates
+│   ├── finetune.py           # CLIP fine-tuning with contrastive loss
+│   ├── metrics.py            # Recall@K, NDCG@K, mAP@K computation
+│   └── utils.py              # Data loading, preprocessing helpers
+├── app.py                    # Streamlit demo application
+├── evaluate.py               # Batch evaluation script
+├── requirements.txt
+└── README.md
+```
+
 ## Setup & Installations
 
 First, ensure you have Python 3.9+ and pip installed. We recommend setting up a virtual environment.
