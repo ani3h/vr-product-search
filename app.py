@@ -19,6 +19,46 @@ def load_pipeline(index_path, alpha, clip_model):
         return None
     return RetrievalPipeline(index_path=index_path, alpha=alpha, clip_model_path=clip_model)
 
+# --- Premium Aesthetics ---
+st.markdown("""
+<style>
+    .main {
+        background-color: #0e1117;
+    }
+    .stButton>button {
+        width: 100%;
+        border-radius: 10px;
+        height: 3em;
+        background-color: #262730;
+        color: #ffffff;
+        border: 1px solid #4B4B4B;
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #ff4b4b;
+        border-color: #ff4b4b;
+    }
+    .result-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 20px;
+    }
+    h1 {
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        letter-spacing: -1px;
+        color: #FFFFFF;
+    }
+    .sidebar .sidebar-content {
+        background-image: linear-gradient(#2e7bcf, #2e7bcf);
+        color: white;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 def main():
     st.title("Visual Product Search Engine")
     st.markdown("Upload a fashion image to find visually similar items from our catalog!")
@@ -75,12 +115,14 @@ def main():
                 cols = st.columns(5)
                 for idx, res in enumerate(results[:k_val]):
                     with cols[idx % 5]:
+                        st.markdown('<div class="result-card">', unsafe_allow_html=True)
                         try:
                             res_img = Image.open(res['image_path'])
                             st.image(res_img, use_container_width=True, caption=f"ID: {res['item_id']}")
                         except:
                             st.write(f"Image not found. ID: {res['item_id']}")
                         st.caption(f"Score: {res.get('itm_score', res.get('ann_score', 0)):.3f}")
+                        st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

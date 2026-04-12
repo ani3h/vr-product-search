@@ -27,8 +27,8 @@ def build_index():
     
     os.makedirs(args.index_path, exist_ok=True)
     
-    print(f"Loading metadata from {args.data_dir}...")
-    df = load_deepfashion_metadata(args.data_dir)
+    print(f"Loading metadata from {args.data_dir} (gallery split)...")
+    df = load_deepfashion_metadata(args.data_dir, split='gallery')
     print(f"Found {len(df)} images.")
     dataset = DeepFashionDataset(df)
     

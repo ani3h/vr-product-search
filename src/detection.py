@@ -4,7 +4,7 @@ from PIL import Image
 import numpy as np
 
 class YOLODetector:
-    def __init__(self, model_version='yolov8n.pt'):
+    def __init__(self, model_version='yolov8m.pt'):
         self.model = YOLO(model_version)
 
     def crop_primary_item(self, image: Image.Image, gt_bbox=None) -> Image.Image:

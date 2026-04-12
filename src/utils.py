@@ -44,7 +44,7 @@ class DeepFashionDataset(torch.utils.data.Dataset):
             
         return image, item_id, image_path, meta
 
-def load_deepfashion_metadata(data_dir):
+def load_deepfashion_metadata(data_dir, split=None):
     # Scans the data directory for images to mock/build a dataframe mapping
     # image paths to item_ids. In DeepFashion, item_ids are usually folders (e.g. id_0000001).
     records = []
@@ -95,7 +95,11 @@ def load_deepfashion_metadata(data_dir):
                 if 'gt_description' in row:
                     record['gt_description'] = row['gt_description']
                 records.append(record)
-            return pd.DataFrame(records)
+            
+            df_final = pd.DataFrame(records)
+            if split:
+                df_final = df_final[df_final['split'] == split].reset_index(drop=True)
+            return df_final
             
     # Fallback: scan folders
     for root, dirs, files in os.walk(data_dir):

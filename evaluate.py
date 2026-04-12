@@ -12,7 +12,7 @@ from utils import load_deepfashion_metadata
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Batch Evaluation Script")
-    parser.add_argument("--query_dir", type=str, required=True, help="Directory containing query images")
+    parser.add_argument("--data_root", type=str, required=True, help="Root directory of the dataset (containing list_eval_partition.txt)")
     parser.add_argument("--gallery_dir", type=str, required=False, help="Ignored since index is prebuilt")
     parser.add_argument("--index_path", type=str, required=True, help="Path to HNSW directory")
     parser.add_argument("--model_path", type=str, default=None, help="Path to Finetuned CLIP")
@@ -32,7 +32,8 @@ def main():
     )
     
     # Load query ground truth
-    df_queries = load_deepfashion_metadata(args.query_dir)
+    print(f"Loading query metadata from {args.data_root}...")
+    df_queries = load_deepfashion_metadata(args.data_root, split='query')
     if 'item_id' not in df_queries.columns:
         print("Error: Could not determine ground truth item_ids for queries.")
         return

@@ -82,7 +82,7 @@ def train():
     optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     loss_fn = SupConLoss()
     
-    df = load_deepfashion_metadata(args.data_dir)
+    df = load_deepfashion_metadata(args.data_dir, split='train')
     # Convert item_id strings to ints for the loss function
     unique_ids = df['item_id'].unique()
     id_to_int = {v: k for k, v in enumerate(unique_ids)}

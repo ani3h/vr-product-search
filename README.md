@@ -40,6 +40,7 @@ graph TD
 │   └── utils.py              # Data loading, preprocessing helpers
 ├── app.py                    # Streamlit demo application
 ├── evaluate.py               # Batch evaluation script
+├── run_ablation.py           # Abalation Study
 ├── requirements.txt
 └── README.md
 ```
@@ -53,7 +54,9 @@ pip install -r requirements.txt
 ```
 
 ### Dataset Structure
-The dataset relies on DeepFashion In-Shop Clothes Retrieval. Place the images and metadata inside the `data/raw` folder. Images should have identifiable paths containing `item_id`.
+The dataset relies on DeepFashion In-Shop Clothes Retrieval. Place the images and metadata inside the `data/raw` folder. 
+- **Partitioning**: The system automatically respects the Train/Gallery/Query splits defined in `list_eval_partition.txt`.
+---
 
 ## Usage
 
@@ -62,6 +65,7 @@ Extracts objects, captions them, builds bindings, and constructs the HNSW index 
 ```bash
 python src/indexing.py --data_dir data/raw --index_path index/hnsw_index --alpha 0.5
 ```
+*Note: `alpha` determines the weight of the vision embedding (1.0 = Vision only, 0.0 = Text only).*
 
 ### 2. Fine-Tuning CLIP
 Fine-tune the vision encoder of CLIP with negative sampling.
@@ -80,12 +84,21 @@ Run a batch evaluation pipeline for Recall@K, NDCG@K, mAP@K across `K={5, 10, 15
 
 ```bash
 python evaluate.py \
-    --query_dir data/raw/queries \
-    --gallery_dir data/raw/gallery \
+    --data_root data/raw \
     --index_path index/hnsw_index \
-    --model_path models/clip_finetuned \
     --alpha 0.6 \
     --output results.csv
+```
+
+### 5. Full Ablation Study
+Automate the entire pipeline (fine-tuning, indexing, and evaluation) across multiple configurations and random seeds.
+```bash
+python run_ablation.py \
+    --data_dir data/raw \
+    --seeds 42 123 \
+    --alpha 0.5 \
+    --epochs 3 \
+    --output_dir results/ablation
 ```
 
 ## Ablation Study Results
