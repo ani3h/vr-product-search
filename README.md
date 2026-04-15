@@ -91,21 +91,23 @@ python evaluate.py \
 ```
 
 ### 5. Full Ablation Study
-Automate the entire pipeline (fine-tuning, indexing, and evaluation) across multiple configurations and random seeds.
+Automate the entire pipeline (fine-tuning, indexing, and evaluation) across multiple configurations, random seeds, and $\alpha$ values.
 ```bash
 python run_ablation.py \
     --data_dir data/raw \
-    --seeds 42 123 \
-    --alpha 0.5 \
+    --seeds 2 536 576 584 \
+    --alphas 0.3 0.7 \
     --epochs 3 \
     --output_dir results/ablation
 ```
 
 ## Ablation Study Results
+Results are reported as **mean ± standard deviation** across random seeds (roll numbers). Results for Config B and C are shown for the chosen $\alpha$ values.
+
 | Configuration | Alpha (α) | Recall@5 | Recall@10 | NDCG@10 | mAP@10 |
 | ------------- | --------- | -------- | --------- | ------- | ------ |
 | A: Vision-only (Baseline) | 1.0 | - | - | - | - |
-| B: Frozen CLIP + BLIP-2 | 0.5 | - | - | - | - |
-| B: Frozen CLIP + BLIP-2 | 0.8 | - | - | - | - |
-| C: Finetuned CLIP + BLIP-2 | 0.5 | - | - | - | - |
-| C: Finetuned CLIP + BLIP-2 | 0.8 | - | - | - | - |
+| B: Frozen CLIP + BLIP-2 | 0.3 | - | - | - | - |
+| B: Frozen CLIP + BLIP-2 | 0.7 | - | - | - | - |
+| C: Finetuned CLIP + BLIP-2 | 0.3 | - | - | - | - |
+| C: Finetuned CLIP + BLIP-2 | 0.7 | - | - | - | - |
